@@ -1,0 +1,14 @@
+{
+  "name": "magic-8-ball-bot",
+  "version": "1.0.0",
+  "description": "A Magic 8 Ball bot for Discord",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "kaduke",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.7.1"
+  }
+}
