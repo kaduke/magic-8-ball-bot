@@ -1,9 +1,19 @@
-const { Client, GatewayIntentBits, SlashCommandBuilder, SlashCommandStringOption, REST, Routes } = require('discord.js');
+const {
+    Client,
+    GatewayIntentBits,
+    SlashCommandBuilder,
+    SlashCommandStringOption,
+    REST,
+    Routes
+} = require('discord.js');
+
+const REST_VERSION = '10';
 
 const CLIENT_ID = process.env.MAGIC_8_BALL_CLIENT_ID;
 const TOKEN = process.env.MAGIC_8_BALL_TOKEN;
 
 const ASK_COMMAND_NAME = 'ask';
+const QUESTION_OPTION_NAME = 'question';
 const ASK_COMMAND_ANSWERS = [
     'It is certain',
     'It is decidedly so',
@@ -26,10 +36,15 @@ const ASK_COMMAND_ANSWERS = [
     'Outlook not so good',
     'Very doubtful',
 ];
-const REST_VERSION = '10';
 
 function getRandomElement(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function getFormattedResponseForQuestion(question) {
+    const answer = getRandomElement(ASK_COMMAND_ANSWERS);
+    console.debug(`Question asked: ${question}, answer: ${answer}`);
+    return `**Question:** ${question}\n**Answer:** ${answer}`;
 }
 
 const rest = new REST({ version: REST_VERSION }).setToken(TOKEN);
@@ -45,12 +60,12 @@ client.on('ready', async () => {
         .setDescription('Ask me anything')
         .addStringOption(
             new SlashCommandStringOption()
-                .setName('question')
+                .setName(QUESTION_OPTION_NAME)
                 .setDescription('The question to ask')
                 .setRequired(true)
         );
 
-    await rest.put(Routes.applicationCommands(CLIENT_ID), { 
+    await rest.put(Routes.applicationCommands(CLIENT_ID), {
         body: [askCommand]
     });
 
@@ -62,7 +77,7 @@ client.on('interactionCreate', async interaction => {
 
     if (interaction.commandName === ASK_COMMAND_NAME) {
         await interaction.reply({
-            content: getRandomElement(ASK_COMMAND_ANSWERS)
+            content: getFormattedResponseForQuestion(interaction.options.getString(QUESTION_OPTION_NAME))
         });
     }
 });
